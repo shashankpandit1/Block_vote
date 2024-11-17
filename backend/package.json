@@ -11,11 +11,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "crypto-js": "^4.2.0",
     "elliptic": "^6.6.1",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
-    "inquirer": "^12.1.0"
+    "inquirer": "^12.1.0",
+    "uuid": "^11.0.3",
+    "web3": "^4.15.0"
   }
 }

@@ -1,0 +1,37 @@
+/* Results.css */
+.results-container {
+    width: 50%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .results-list {
+    margin-top: 20px;
+  }
+  
+  .result-item {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .error-message {
+    padding: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    margin-bottom: 20px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  
+  p {
+    text-align: center;
+  }
+  

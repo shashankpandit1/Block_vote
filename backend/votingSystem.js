@@ -1,4 +1,3 @@
-// votingSystem.js
 import SHA256 from 'crypto-js/sha256.js';
 import pkg from 'elliptic';
 const { ec: EC } = pkg;
@@ -9,22 +8,25 @@ class Vote {
     this.voterAddress = voterAddress;
     this.candidate = candidate;
   }
+
   calculateHash() {
     return SHA256(this.voterAddress + this.candidate).toString();
   }
+
   signVote(signingKey) {
-    if(signingKey.getPublic('hex') !== this.voterAddress) {
+    if (signingKey.getPublic('hex') !== this.voterAddress) {
       throw new Error('You cannot sign votes for other voters!');
     }
     const hashVote = this.calculateHash();
     const sig = signingKey.sign(hashVote, 'base64');
     this.signature = sig.toDER('hex');
   }
+
   isValid() {
     if (!this.signature || this.signature.length === 0) {
       throw new Error('No signature in this vote');
-    }   
-    const publicKey = ec.keyFromPublic(this.voterAddress, 'hex');  
+    }
+    const publicKey = ec.keyFromPublic(this.voterAddress, 'hex');
     return publicKey.verify(this.calculateHash(), this.signature);
   }
 }
@@ -37,9 +39,11 @@ class Block {
     this.hash = this.calculateHash();
     this.nonce = 0;
   }
+
   calculateHash() {
     return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.votes) + this.nonce).toString();
   }
+
   mineBlock(difficulty) {
     while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
       this.nonce++;
@@ -47,13 +51,14 @@ class Block {
     }
     console.log("Block mined: " + this.hash);
   }
+
   hasValidVotes() {
-    for(const vote of this.votes){
-      if(!vote.isValid()){
+    for (const vote of this.votes) {
+      if (!vote.isValid()) {
         return false;
       }
     }
-    return true;    
+    return true;
   }
 }
 
@@ -62,7 +67,7 @@ class VotingBlockChain {
     this.chain = [this.createGenesisBlock()];
     this.difficulty = 2;
     this.pendingVotes = [];
-    this.voters = new Set();
+    this.voters = new Map(); // Store voters by mobile number
   }
 
   createGenesisBlock() {
@@ -82,24 +87,24 @@ class VotingBlockChain {
   }
 
   addVote(vote) {
-    if(!vote.voterAddress || !vote.candidate) {
+    if (!vote.voterAddress || !vote.candidate) {
       throw new Error('Vote must include voter address and candidate');
     }
-    if(!vote.isValid()) {
+    if (!vote.isValid()) {
       throw new Error('Cannot add invalid vote');
     }
-    if(this.voters.has(vote.voterAddress)) {
+    if (this.voters.has(vote.voterAddress)) {
       throw new Error('Voter has already cast a vote');
     }
     this.pendingVotes.push(vote);
-    this.voters.add(vote.voterAddress); // Prevents double voting
+    this.voters.set(vote.voterAddress, true); // Prevents double voting
   }
 
   countVotes() {
     const voteCounts = {};
     for (const block of this.chain) {
       for (const vote of block.votes) {
-        if(voteCounts[vote.candidate]) {
+        if (voteCounts[vote.candidate]) {
           voteCounts[vote.candidate]++;
         } else {
           voteCounts[vote.candidate] = 1;
@@ -124,6 +129,30 @@ class VotingBlockChain {
       }
     }
     return true;
+  }
+
+  // Register voter with mobile number, Aadhar number, public/private keys
+  registerVoter(mobileNumber, aadharNumber, voterDetails, publicKey, privateKey) {
+    // Store voter data using mobile number as the key
+    this.voters.set(mobileNumber, { voterDetails, publicKey, privateKey, aadharNumber });
+    console.log('Voter registered:', voterDetails);
+  }
+
+  // Login voter using mobile number and Aadhar number
+  loginVoter(mobileNumber, aadharNumber) {
+    if (this.voters.has(mobileNumber)) {
+      const voter = this.voters.get(mobileNumber);
+      if (voter.aadharNumber === aadharNumber) {
+        console.log('Login successful');
+        return true;
+      } else {
+        console.log('Invalid Aadhar number');
+        return false;
+      }
+    } else {
+      console.log('Mobile number not registered');
+      return false;
+    }
   }
 }
 

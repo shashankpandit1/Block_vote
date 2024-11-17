@@ -1,0 +1,28 @@
+/* Mine.css */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  p {
+    font-size: 16px;
+  }
+  
+  p.green {
+    color: green;
+  }
+  
+  p.red {
+    color: red;
+  }
+  
